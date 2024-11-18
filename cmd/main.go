@@ -6,8 +6,13 @@ import (
 	"os"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/joho/godotenv"
 )
+
+func homeHandler(c *fiber.Ctx) error {
+	return c.SendString("API Hit")
+}
 
 func main() {
 	if err := godotenv.Load(); err != nil {
@@ -17,11 +22,8 @@ func main() {
 	port := os.Getenv("PORT")
 
 	app := fiber.New()
-
-	app.Get("/", func(c *fiber.Ctx) error {
-		log.Println("GET / call made from : ", c.IP())
-		return c.SendString("Hello, World!")
-	})
+	app.Use(logger.New())
+	app.Get("/", homeHandler)
 
 	fmt.Println("API Server listening on ", port)
 	app.Listen(port)
